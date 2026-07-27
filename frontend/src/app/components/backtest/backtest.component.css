@@ -1,0 +1,63 @@
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+}
+h2 {
+  font-size: 15px;
+  margin: 0 0 16px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+h3 {
+  font-size: 12px;
+  margin: 0 0 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.muted { color: var(--muted); }
+
+.headline {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px;
+  background: var(--panel2);
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+.big {
+  font-size: 46px;
+  font-weight: 800;
+  color: var(--win);
+  line-height: 1;
+}
+.meta { font-size: 14px; display: flex; flex-direction: column; gap: 4px; }
+.meta .muted { font-size: 12px; }
+
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 640px) { .cols { grid-template-columns: 1fr; } }
+
+.rowbar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; }
+.rl { width: 70px; color: var(--text); }
+.track { flex: 1; height: 10px; background: var(--panel2); border-radius: 6px; overflow: hidden; }
+.fill { height: 100%; background: var(--win); border-radius: 6px; }
+.fill.alt { background: var(--accent2); }
+.rv { width: 92px; text-align: right; font-variant-numeric: tabular-nums; }
+
+.samples { margin-top: 20px; }
+.samples summary { cursor: pointer; color: var(--accent2); font-size: 13px; }
+.srow {
+  display: flex; align-items: center; gap: 10px; font-size: 13px;
+  padding: 7px 8px; border-bottom: 1px solid var(--line);
+}
+.badge { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+.badge.ok { background: color-mix(in srgb, var(--win) 22%, transparent); color: var(--win); }
+.badge.no { background: color-mix(in srgb, #ff4d4d 22%, transparent); color: #ff6b6b; }
+.season { color: var(--muted); width: 38px; }
+.fight { flex: 1; }
+.pred { color: var(--muted); }
+.conf { color: var(--muted); font-size: 11px; width: 60px; text-align: right; }

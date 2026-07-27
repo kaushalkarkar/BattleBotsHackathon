@@ -1,0 +1,54 @@
+<div class="card">
+  <div class="pickers">
+    <div class="field">
+      <label>Robot A</label>
+      <select [(ngModel)]="robotA">
+        <option *ngFor="let r of robots" [value]="r.robot">{{ r.robot }}</option>
+      </select>
+    </div>
+
+    <div class="vs">VS</div>
+
+    <div class="field">
+      <label>Robot B</label>
+      <select [(ngModel)]="robotB">
+        <option *ngFor="let r of robots" [value]="r.robot">{{ r.robot }}</option>
+      </select>
+    </div>
+
+    <button (click)="onPredict()" [disabled]="sameRobot || loading">
+      {{ loading ? 'Predicting…' : 'Predict ⚡' }}
+    </button>
+  </div>
+
+  <p class="hint" *ngIf="sameRobot">Pick two different robots.</p>
+  <p class="err" *ngIf="error">{{ error }}</p>
+
+  <div class="result" *ngIf="prediction && !sameRobot">
+    <div class="verdict">
+      Predicted winner: <b>{{ prediction.winner }}</b> 🏆
+    </div>
+    <div class="conf">
+      Confidence: <span [class]="prediction.confidence">{{ prediction.confidence }}</span>
+    </div>
+
+    <div class="bar">
+      <div class="a" [style.width.%]="prediction.prob_a">{{ prediction.prob_a }}%</div>
+      <div class="b" [style.width.%]="prediction.prob_b">{{ prediction.prob_b }}%</div>
+    </div>
+    <div class="names">
+      <span>{{ prediction.robot_a }}</span>
+      <span>{{ prediction.robot_b }}</span>
+    </div>
+
+    <ul class="reasons">
+      <li *ngFor="let reason of prediction.reasons">{{ reason }}</li>
+    </ul>
+
+    <app-comparison-chart
+      [axes]="radarAxes"
+      [labelA]="prediction.robot_a"
+      [labelB]="prediction.robot_b">
+    </app-comparison-chart>
+  </div>
+</div>

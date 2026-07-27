@@ -1,0 +1,38 @@
+.chart { margin-top: 18px; display: flex; flex-direction: column; align-items: center; }
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.legend .key {
+  width: 12px; height: 12px; border-radius: 3px; display: inline-block;
+  margin-left: 12px;
+}
+.legend .key.a { background: var(--accent); margin-left: 0; }
+.legend .key.b { background: var(--accent2); }
+
+.radar { width: 260px; height: 260px; max-width: 100%; }
+
+.ring { fill: none; stroke: var(--line); stroke-width: 1; }
+.spoke { stroke: var(--line); stroke-width: 1; }
+
+.area-a {
+  fill: color-mix(in srgb, var(--accent) 30%, transparent);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.area-b {
+  fill: color-mix(in srgb, var(--accent2) 25%, transparent);
+  stroke: var(--accent2);
+  stroke-width: 2;
+}
+
+.axis-label {
+  fill: var(--muted);
+  font-size: 10px;
+  dominant-baseline: middle;
+}

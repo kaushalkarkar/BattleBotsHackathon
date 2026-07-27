@@ -1,0 +1,27 @@
+<div class="card">
+  <h2>🏆 Leaderboard — ranked by win rate</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Robot</th>
+          <th>Weapon</th>
+          <th class="n">W-L</th>
+          <th class="n">Win %</th>
+          <th class="n">KO %</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of rows" (click)="openRobot.emit(r.robot)" class="clickable">
+          <td class="rank">{{ r.rank }}</td>
+          <td class="name">{{ r.robot }}</td>
+          <td class="weapon">{{ pretty(r.weapon_type) }}</td>
+          <td class="n">{{ r.wins }}-{{ r.losses }}</td>
+          <td class="n wr">{{ r.win_rate }}%</td>
+          <td class="n">{{ r.ko_rate }}%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

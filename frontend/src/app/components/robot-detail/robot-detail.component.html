@@ -1,0 +1,40 @@
+<div class="overlay" (click)="close.emit()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <button class="x" (click)="close.emit()" aria-label="Close">×</button>
+
+    <div class="loading" *ngIf="loading">Loading…</div>
+
+    <ng-container *ngIf="detail as d">
+      <div class="head">
+        <div class="rank" *ngIf="d.rank">#{{ d.rank }}</div>
+        <div>
+          <h3>{{ d.robot }}</h3>
+          <p class="sub">{{ pretty(d.weapon_type) }} · {{ d.builder }} · {{ d.country }}</p>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span class="v">{{ d.win_rate }}%</span><span class="l">Win rate</span></div>
+        <div class="stat"><span class="v">{{ d.wins }}-{{ d.losses }}</span><span class="l">Record</span></div>
+        <div class="stat"><span class="v">{{ d.ko_rate }}%</span><span class="l">KO rate</span></div>
+        <div class="stat"><span class="v">{{ d.weight_lb }}</span><span class="l">Weight (lb)</span></div>
+      </div>
+
+      <h4>Match history</h4>
+      <div class="history" *ngIf="d.matches.length; else noMatches">
+        <div class="row" *ngFor="let m of d.matches">
+          <span class="season">{{ m.season }}</span>
+          <span class="badge" [class.win]="m.result === 'Win'" [class.loss]="m.result === 'Loss'">
+            {{ m.result }}
+          </span>
+          <span class="vs">vs</span>
+          <button class="opp" (click)="openRobot.emit(m.opponent)">{{ m.opponent }}</button>
+          <span class="method">{{ m.method }}</span>
+        </div>
+      </div>
+      <ng-template #noMatches>
+        <p class="empty">No recorded matches in the dataset.</p>
+      </ng-template>
+    </ng-container>
+  </div>
+</div>

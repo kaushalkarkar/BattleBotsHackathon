@@ -1,0 +1,43 @@
+robot,weapon_type,weight_lb,wins,losses,ko_wins,builder,country
+Tombstone,horizontal_spinner,250,33,13,24,Ray Billings,USA
+Bite Force,drum_spinner,250,20,4,9,Paul Ventimiglia,USA
+Minotaur,drum_spinner,250,26,12,14,Daniel Freitas,Brazil
+Witch Doctor,vertical_spinner,250,29,15,12,Andrea Suarez,USA
+End Game,vertical_spinner,250,27,7,15,Jack Barker,New Zealand
+Hydra,flipper,250,21,13,8,Jake Ewert,USA
+SawBlaze,overhead_saw,250,25,12,10,Jamison Go,USA
+Copperhead,drum_spinner,250,18,11,9,Zachary Lytle,USA
+Whiplash,lifter,250,22,10,6,Matt Vasquez,USA
+Icewave,horizontal_spinner,250,15,14,9,Marco Meggiolaro,USA
+HUGE,vertical_spinner,250,14,12,5,Jonathan Schultz,USA
+Yeti,drum_spinner,250,12,10,7,Greg Gibson,USA
+Bronco,flipper,250,14,9,6,Reason Bradley,USA
+Riptide,horizontal_spinner,250,13,5,8,Ethan Kurtz,USA
+Skorpios,overhead_saw,250,16,11,7,Orion Beach,USA
+Hypershock,horizontal_spinner,250,17,15,11,Will Bales,USA
+Rotator,horizontal_spinner,250,15,12,7,Victor Soto,USA
+Lock-Jaw,horizontal_spinner,250,16,16,9,Donald Hutson,USA
+Blip,flipper,250,17,6,5,Aren Hill,USA
+Valkyrie,horizontal_spinner,250,13,10,7,Leanne Cushing,USA
+Cobalt,vertical_spinner,250,14,8,8,Dave Moulds,UK
+Fusion,vertical_spinner,250,10,7,6,Jack Barker,New Zealand
+Black Dragon,drum_spinner,250,15,9,5,Gabriel Felix,Brazil
+Uppercut,vertical_spinner,250,12,9,6,Sam McAmis,USA
+Jager,horizontal_spinner,250,9,8,5,Kevin Milczewski,USA
+Free Shipping,overhead_saw,250,11,10,4,Gary Gin,USA
+Shatter,hammer,250,13,11,4,Adam Wrench,USA
+Gruff,lifter,250,12,7,3,Sam Merrill,USA
+Hijinx,horizontal_spinner,250,11,9,5,Jennifer Herchenroeder,USA
+Tantrum,vertical_spinner,250,18,8,7,Aaron Kohls,USA
+Big Dill,lifter,250,7,9,2,Kevin Barker,USA
+Claw Viper,lifter,250,9,8,3,Kevin Milczewski,USA
+Kraken,crusher,250,8,11,3,Matt Spurk,USA
+Lucky,flipper,250,10,9,4,Pablo Vasquez,USA
+Deep Six,vertical_spinner,250,6,9,4,Jerry Clarkin,USA
+Captain Shrederator,horizontal_spinner,250,8,15,5,Brian Nave,USA
+Ghost Raptor,horizontal_spinner,250,7,10,4,Chuck Pitzer,USA
+Chomp,hammer,250,6,10,3,Zoe Stephenson,USA
+Beta,hammer,250,9,8,5,John Reid,UK
+Mammoth,lifter,250,5,10,2,Peter Waller,UK
+Bombshell,horizontal_spinner,250,10,10,5,John Mladenik,USA
+Bloodsport,horizontal_spinner,250,8,9,4,Justin Marple,USA

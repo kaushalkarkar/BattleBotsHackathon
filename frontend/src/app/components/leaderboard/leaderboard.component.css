@@ -1,0 +1,26 @@
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+}
+h2 {
+  font-size: 15px;
+  margin: 0 0 14px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+tr.clickable { cursor: pointer; }
+tr:hover td { background: var(--panel2); }
+.name::after { content: ' ›'; color: var(--muted); opacity: 0; }
+tr:hover .name::after { opacity: 1; }
+.rank { color: var(--accent); font-weight: 700; }
+.name { font-weight: 600; }
+.weapon { color: var(--muted); text-transform: capitalize; }
+.wr { color: var(--win); font-weight: 600; }

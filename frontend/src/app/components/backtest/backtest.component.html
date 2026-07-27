@@ -1,0 +1,42 @@
+<div class="card" *ngIf="result as r">
+  <h2>🔬 Model backtest — validated on {{ r.total }} real fights</h2>
+
+  <div class="headline">
+    <div class="big">{{ r.accuracy }}%</div>
+    <div class="meta">
+      <div><b>{{ r.correct }}</b> of <b>{{ r.total }}</b> historical winners predicted correctly</div>
+      <div class="muted">vs {{ r.baseline }}% coin-flip baseline · head-to-head disabled (no data leakage)</div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="col">
+      <h3>Accuracy by confidence</h3>
+      <div class="rowbar" *ngFor="let c of confidenceRows">
+        <span class="rl">{{ c.label }}</span>
+        <div class="track"><div class="fill" [style.width.%]="c.accuracy"></div></div>
+        <span class="rv">{{ c.accuracy }}% <span class="muted">({{ c.correct }}/{{ c.total }})</span></span>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3>Accuracy by finish type</h3>
+      <div class="rowbar" *ngFor="let m of methodRows">
+        <span class="rl">{{ m.label }}</span>
+        <div class="track"><div class="fill alt" [style.width.%]="m.accuracy"></div></div>
+        <span class="rv">{{ m.accuracy }}% <span class="muted">({{ m.correct }}/{{ m.total }})</span></span>
+      </div>
+    </div>
+  </div>
+
+  <details class="samples">
+    <summary>Show sample predictions</summary>
+    <div class="srow" *ngFor="let s of result!.samples">
+      <span class="badge" [class.ok]="s.correct" [class.no]="!s.correct">{{ s.correct ? '✓' : '✗' }}</span>
+      <span class="season">{{ s.season }}</span>
+      <span class="fight">{{ s.robot_a }} vs {{ s.robot_b }}</span>
+      <span class="pred">pred: <b>{{ s.predicted }}</b> · actual: <b>{{ s.actual }}</b></span>
+      <span class="conf">{{ s.confidence }}</span>
+    </div>
+  </details>
+</div>

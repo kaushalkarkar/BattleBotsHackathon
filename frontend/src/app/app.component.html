@@ -1,0 +1,53 @@
+<header>
+  <h1>⚔️ BattleBots <span>Win Predictor</span></h1>
+  <p>Predict matchups, simulate tournaments, and validate the model — all from web data collected with Bright Data.</p>
+  <div class="tag">#battlebotsdev</div>
+</header>
+
+<nav class="tabs">
+  <button [class.active]="view === 'predict'" (click)="setView('predict')">🥊 Predictor</button>
+  <button [class.active]="view === 'tournament'" (click)="setView('tournament')">🏟️ Tournament</button>
+  <button [class.active]="view === 'backtest'" (click)="setView('backtest')">🔬 Model accuracy</button>
+</nav>
+
+<main>
+  <div class="offline" *ngIf="api.demoMode()">
+    🔌 <b>Demo mode</b> — using the built-in offline dataset. Start the Python backend
+    (<code>uvicorn app.main:app --reload</code>) for live data &amp; Bright Data scraping.
+  </div>
+
+  <ng-container *ngIf="view === 'predict'">
+    <app-predictor
+      [robots]="robots"
+      [prediction]="prediction"
+      [loading]="loading"
+      [error]="error"
+      (predict)="onPredict($event)">
+    </app-predictor>
+
+    <app-leaderboard [rows]="leaderboard" (openRobot)="openRobot($event)"></app-leaderboard>
+  </ng-container>
+
+  <app-tournament
+    *ngIf="view === 'tournament'"
+    [robots]="robots"
+    [defaultSeeds]="topSeeds"
+    [result]="tournament"
+    [loading]="tournamentLoading"
+    (run)="onRunTournament($event)">
+  </app-tournament>
+
+  <app-backtest *ngIf="view === 'backtest'" [result]="backtest"></app-backtest>
+</main>
+
+<app-robot-detail
+  *ngIf="detailOpen"
+  [detail]="detail"
+  [loading]="detailLoading"
+  (close)="closeDetail()"
+  (openRobot)="openRobot($event)">
+</app-robot-detail>
+
+<footer>
+  Built with Bright Data BattleBots web data · Angular + FastAPI · #battlebotsdev
+</footer>

@@ -1,0 +1,29 @@
+<div class="chart" *ngIf="axes.length">
+  <div class="legend">
+    <span class="key a"></span>{{ labelA }}
+    <span class="key b"></span>{{ labelB }}
+  </div>
+
+  <svg [attr.viewBox]="'0 0 ' + size + ' ' + size" class="radar">
+    <!-- grid rings -->
+    <polygon *ngFor="let ring of rings"
+             [attr.points]="ringPolygon(ring)"
+             class="ring" />
+
+    <!-- spokes -->
+    <line *ngFor="let p of axisPoints"
+          [attr.x1]="cx" [attr.y1]="cy"
+          [attr.x2]="p.x" [attr.y2]="p.y"
+          class="spoke" />
+
+    <!-- robot B first (drawn under A) -->
+    <polygon [attr.points]="polyB" class="area-b" />
+    <polygon [attr.points]="polyA" class="area-a" />
+
+    <!-- axis labels -->
+    <text *ngFor="let p of labelPoints; let i = index"
+          [attr.x]="p.x" [attr.y]="p.y"
+          [attr.text-anchor]="anchor(p)"
+          class="axis-label">{{ axes[i].label }}</text>
+  </svg>
+</div>

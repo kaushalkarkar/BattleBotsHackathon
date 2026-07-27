@@ -1,0 +1,42 @@
+<div class="card">
+  <h2>🏟️ Tournament simulator — 8-robot single elimination</h2>
+
+  <div class="seeds">
+    <div class="seed" *ngFor="let s of seeds; let i = index">
+      <label>Seed {{ i + 1 }}</label>
+      <select [(ngModel)]="seeds[i]">
+        <option *ngFor="let r of robots" [value]="r.robot">{{ r.robot }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button (click)="onRun()" [disabled]="loading || hasDuplicates">
+      {{ loading ? 'Simulating…' : 'Run tournament 🏟️' }}
+    </button>
+    <span class="warn" *ngIf="hasDuplicates">Each seed must be a different robot.</span>
+  </div>
+
+  <div class="bracket" *ngIf="result as t">
+    <div class="round" *ngFor="let round of t.rounds; let ri = index">
+      <div class="round-title">{{ roundTitle(round.length) }}</div>
+      <div class="matches">
+        <div class="match" *ngFor="let m of round">
+          <div class="slot" [class.win]="m.winner === m.a">
+            <span class="rname">{{ m.a }}</span>
+            <span class="p">{{ m.winner === m.a ? winnerProb(m) : loserProb(m) }}%</span>
+          </div>
+          <div class="slot" [class.win]="m.winner === m.b">
+            <span class="rname">{{ m.b }}</span>
+            <span class="p">{{ m.winner === m.b ? winnerProb(m) : loserProb(m) }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="round champion-col">
+      <div class="round-title">Champion</div>
+      <div class="champion">🏆<br>{{ t.champion }}</div>
+    </div>
+  </div>
+</div>
