@@ -1,0 +1,55 @@
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+h2 {
+  font-size: 15px;
+  margin: 0 0 4px;
+  color: var(--text);
+}
+.sub { margin: 0 0 18px; color: var(--muted); font-size: 13px; }
+
+/* weapon bars */
+.bars { margin-bottom: 20px; }
+.wrow { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; font-size: 13px; }
+.wl { width: 130px; text-transform: capitalize; }
+.track { flex: 1; height: 12px; background: var(--panel2); border-radius: 6px; overflow: hidden; }
+.fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+}
+.wv { width: 52px; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+td.cap { text-transform: capitalize; font-weight: 600; }
+td.hi { color: var(--accent); font-weight: 700; }
+
+/* upsets */
+.upsets { display: flex; flex-direction: column; gap: 12px; }
+.urow { display: flex; gap: 12px; align-items: flex-start; }
+.urank {
+  font-size: 15px; font-weight: 800; color: var(--accent);
+  background: var(--panel2); border-radius: 8px; padding: 6px 11px; min-width: 34px; text-align: center;
+}
+.ubody { flex: 1; }
+.uline { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; margin-bottom: 6px; }
+.underdog { color: var(--win); }
+.fav { color: var(--muted); text-decoration: line-through; }
+.beat { color: var(--muted); font-size: 12px; }
+.method { color: var(--muted); font-size: 11px; border: 1px solid var(--line); border-radius: 20px; padding: 1px 8px; }
+.season { color: var(--muted); font-size: 12px; margin-left: auto; }
+.umeter { position: relative; height: 20px; background: var(--panel2); border-radius: 6px; overflow: hidden; }
+.ufill { height: 100%; background: color-mix(in srgb, var(--accent) 35%, transparent); }
+.ulabel {
+  position: absolute; left: 10px; top: 0; height: 20px; display: flex; align-items: center;
+  font-size: 11px; color: var(--text);
+}
+.empty { color: var(--muted); font-size: 13px; }

@@ -13,6 +13,7 @@
   <button [class.active]="view === 'predict'" (click)="setView('predict')">🥊 Predictor</button>
   <button [class.active]="view === 'tournament'" (click)="setView('tournament')">🏟️ Tournament</button>
   <button [class.active]="view === 'backtest'" (click)="setView('backtest')">🔬 Model accuracy</button>
+  <button [class.active]="view === 'insights'" (click)="setView('insights')">📈 Insights</button>
 </nav>
 
 <main>
@@ -43,6 +44,12 @@
   </app-tournament>
 
   <app-backtest *ngIf="view === 'backtest'" [result]="backtest"></app-backtest>
+
+  <app-insights
+    *ngIf="view === 'insights'"
+    [meta]="weaponMeta"
+    [upsets]="upsets">
+  </app-insights>
 </main>
 
 <app-robot-detail

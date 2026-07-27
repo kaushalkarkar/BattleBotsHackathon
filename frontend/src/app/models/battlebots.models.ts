@@ -60,6 +60,26 @@ export interface BacktestResult {
   samples: BacktestSample[];
 }
 
+export interface WeaponMeta {
+  weapon: string;
+  robots: number;
+  wins: number;
+  losses: number;
+  win_rate: number;
+  ko_rate: number;
+  battle_wins: number;
+  battle_losses: number;
+  battle_rate: number;
+}
+
+export interface Upset {
+  season: number;
+  favorite: string;
+  fav_prob: number;
+  actual_winner: string;
+  method: string;
+}
+
 export interface BracketMatch {
   a: string;
   b: string;

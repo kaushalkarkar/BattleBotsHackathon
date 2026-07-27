@@ -9,6 +9,8 @@ import {
   Robot,
   RobotDetail,
   TournamentResult,
+  Upset,
+  WeaponMeta,
 } from '../models/battlebots.models';
 import {
   localBacktest,
@@ -17,6 +19,8 @@ import {
   localRobotDetail,
   localRobots,
   localTournament,
+  localUpsets,
+  localWeaponMeta,
 } from './local-engine';
 
 @Injectable({ providedIn: 'root' })
@@ -69,6 +73,18 @@ export class BattlebotsService {
     const params = { robots: names.join(',') };
     return this.http.get<TournamentResult>(`${this.base}/tournament`, { params }).pipe(
       catchError(() => this.fallback(localTournament(names))),
+    );
+  }
+
+  getWeaponMeta(): Observable<WeaponMeta[]> {
+    return this.http.get<WeaponMeta[]>(`${this.base}/weapon-meta`).pipe(
+      catchError(() => this.fallback(localWeaponMeta())),
+    );
+  }
+
+  getUpsets(): Observable<Upset[]> {
+    return this.http.get<Upset[]>(`${this.base}/upsets`).pipe(
+      catchError(() => this.fallback(localUpsets(10))),
     );
   }
 

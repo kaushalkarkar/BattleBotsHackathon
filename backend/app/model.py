@@ -271,6 +271,82 @@ def backtest() -> dict:
     }
 
 
+def weapon_meta() -> list[dict]:
+    """Aggregate performance by weapon type.
+
+    Combines two views: career record (from the roster) and actual battle
+    record (who won when weapon types met in recorded matches).
+    """
+    robots, matches = load_data()
+    name_weapon = dict(zip(robots.robot, robots.weapon_type))
+
+    agg: dict[str, dict] = {}
+    for _, r in robots.iterrows():
+        a = agg.setdefault(r.weapon_type, {"robots": 0, "wins": 0, "losses": 0, "ko_wins": 0})
+        a["robots"] += 1
+        a["wins"] += int(r.wins)
+        a["losses"] += int(r.losses)
+        a["ko_wins"] += int(r.ko_wins)
+
+    battle: dict[str, list[int]] = {}  # weapon -> [wins, losses]
+    for _, m in matches.iterrows():
+        loser = m.robot_b if m.winner == m.robot_a else m.robot_a
+        wl, ll = name_weapon.get(m.winner), name_weapon.get(loser)
+        if wl:
+            battle.setdefault(wl, [0, 0])[0] += 1
+        if ll:
+            battle.setdefault(ll, [0, 0])[1] += 1
+
+    rows = []
+    for weapon, a in agg.items():
+        total = a["wins"] + a["losses"]
+        bw, bl = battle.get(weapon, [0, 0])
+        btotal = bw + bl
+        rows.append({
+            "weapon": weapon,
+            "robots": a["robots"],
+            "wins": a["wins"],
+            "losses": a["losses"],
+            "win_rate": round(a["wins"] / total * 100, 1) if total else 0.0,
+            "ko_rate": round(a["ko_wins"] / a["wins"] * 100, 1) if a["wins"] else 0.0,
+            "battle_wins": bw,
+            "battle_losses": bl,
+            "battle_rate": round(bw / btotal * 100, 1) if btotal else 0.0,
+        })
+    rows.sort(key=lambda x: x["battle_rate"], reverse=True)
+    return rows
+
+
+def upsets(limit: int = 10) -> list[dict]:
+    """Biggest upsets: historical fights where the model's favorite lost.
+
+    Ranked by how confident the model was in the (wrong) favorite — a high
+    number means a big underdog win. Head-to-head is disabled for a fair test.
+    """
+    robots, matches = load_data()
+    names = set(robots.robot)
+
+    found = []
+    for _, m in matches.iterrows():
+        if m.robot_a not in names or m.robot_b not in names:
+            continue
+        if m.winner not in (m.robot_a, m.robot_b):
+            continue
+        p = predict(m.robot_a, m.robot_b, use_h2h=False)
+        if p["winner"] != m.winner:
+            favorite = p["winner"]
+            fav_prob = p["prob_a"] if favorite == m.robot_a else p["prob_b"]
+            found.append({
+                "season": int(m.season),
+                "favorite": favorite,
+                "fav_prob": fav_prob,
+                "actual_winner": m.winner,
+                "method": m.method,
+            })
+    found.sort(key=lambda x: x["fav_prob"], reverse=True)
+    return found[:limit]
+
+
 def tournament(names: list[str]) -> dict:
     """Simulate a single-elimination bracket over the given robots.
 

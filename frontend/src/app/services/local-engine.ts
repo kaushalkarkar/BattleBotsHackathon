@@ -11,6 +11,8 @@ import {
   RobotDetail,
   RobotMatch,
   TournamentResult,
+  Upset,
+  WeaponMeta,
 } from '../models/battlebots.models';
 import { DEMO_MATCHES, DEMO_ROBOTS } from './demo-data';
 
@@ -193,6 +195,79 @@ export function localBacktest(): BacktestResult {
     by_method: Object.fromEntries(Object.entries(byMethod).map(([k, v]) => [k, bucket(v)])),
     samples,
   };
+}
+
+export function localWeaponMeta(): WeaponMeta[] {
+  const nameWeapon = new Map(DEMO_ROBOTS.map((r) => [r.robot, r.weapon_type]));
+  const agg = new Map<string, { robots: number; wins: number; losses: number; ko: number }>();
+  for (const r of DEMO_ROBOTS) {
+    const a = agg.get(r.weapon_type) ?? { robots: 0, wins: 0, losses: 0, ko: 0 };
+    a.robots++;
+    a.wins += r.wins;
+    a.losses += r.losses;
+    a.ko += r.ko_wins;
+    agg.set(r.weapon_type, a);
+  }
+
+  const battle = new Map<string, [number, number]>(); // weapon -> [wins, losses]
+  for (const m of DEMO_MATCHES) {
+    const loser = m.winner === m.robot_a ? m.robot_b : m.robot_a;
+    const wl = nameWeapon.get(m.winner);
+    const ll = nameWeapon.get(loser);
+    if (wl) {
+      const b = battle.get(wl) ?? [0, 0];
+      b[0]++;
+      battle.set(wl, b);
+    }
+    if (ll) {
+      const b = battle.get(ll) ?? [0, 0];
+      b[1]++;
+      battle.set(ll, b);
+    }
+  }
+
+  const rows: WeaponMeta[] = [];
+  for (const [weapon, a] of agg) {
+    const total = a.wins + a.losses;
+    const [bw, bl] = battle.get(weapon) ?? [0, 0];
+    const bt = bw + bl;
+    rows.push({
+      weapon,
+      robots: a.robots,
+      wins: a.wins,
+      losses: a.losses,
+      win_rate: total ? +((a.wins / total) * 100).toFixed(1) : 0,
+      ko_rate: a.wins ? +((a.ko / a.wins) * 100).toFixed(1) : 0,
+      battle_wins: bw,
+      battle_losses: bl,
+      battle_rate: bt ? +((bw / bt) * 100).toFixed(1) : 0,
+    });
+  }
+  rows.sort((x, y) => y.battle_rate - x.battle_rate);
+  return rows;
+}
+
+export function localUpsets(limit = 10): Upset[] {
+  const names = new Set(DEMO_ROBOTS.map((r) => r.robot));
+  const found: Upset[] = [];
+  for (const m of DEMO_MATCHES) {
+    if (!names.has(m.robot_a) || !names.has(m.robot_b)) continue;
+    if (m.winner !== m.robot_a && m.winner !== m.robot_b) continue;
+    const p = localPredict(m.robot_a, m.robot_b, false);
+    if (p.winner !== m.winner) {
+      const favorite = p.winner;
+      const favProb = favorite === m.robot_a ? p.prob_a : p.prob_b;
+      found.push({
+        season: m.season,
+        favorite,
+        fav_prob: favProb,
+        actual_winner: m.winner,
+        method: m.method,
+      });
+    }
+  }
+  found.sort((a, b) => b.fav_prob - a.fav_prob);
+  return found.slice(0, limit);
 }
 
 export function localTournament(names: string[]): TournamentResult {

@@ -8,14 +8,17 @@ import {
   Robot,
   RobotDetail,
   TournamentResult,
+  Upset,
+  WeaponMeta,
 } from './models/battlebots.models';
 import { PredictorComponent } from './components/predictor/predictor.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { RobotDetailComponent } from './components/robot-detail/robot-detail.component';
 import { BacktestComponent } from './components/backtest/backtest.component';
 import { TournamentComponent } from './components/tournament/tournament.component';
+import { InsightsComponent } from './components/insights/insights.component';
 
-type View = 'predict' | 'tournament' | 'backtest';
+type View = 'predict' | 'tournament' | 'backtest' | 'insights';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +30,7 @@ type View = 'predict' | 'tournament' | 'backtest';
     RobotDetailComponent,
     BacktestComponent,
     TournamentComponent,
+    InsightsComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
@@ -53,6 +57,10 @@ export class AppComponent implements OnInit {
 
   // Backtest
   backtest: BacktestResult | null = null;
+
+  // Insights
+  weaponMeta: WeaponMeta[] = [];
+  upsets: Upset[] = [];
 
   constructor(public api: BattlebotsService) {}
 
@@ -89,6 +97,10 @@ export class AppComponent implements OnInit {
     this.view = v;
     if (v === 'backtest' && !this.backtest) {
       this.api.getBacktest().subscribe((r) => (this.backtest = r));
+    }
+    if (v === 'insights' && this.weaponMeta.length === 0) {
+      this.api.getWeaponMeta().subscribe((r) => (this.weaponMeta = r));
+      this.api.getUpsets().subscribe((r) => (this.upsets = r));
     }
   }
 

@@ -1,0 +1,66 @@
+<div class="card">
+  <h2>🗡️ Weapon meta — which weapon type dominates?</h2>
+  <p class="sub">Battle win rate = share of recorded fights won when that weapon type met another.</p>
+
+  <div class="bars">
+    <div class="wrow" *ngFor="let w of meta">
+      <span class="wl">{{ pretty(w.weapon) }}</span>
+      <div class="track">
+        <div class="fill" [style.width.%]="w.battle_rate"></div>
+      </div>
+      <span class="wv">{{ w.battle_rate }}%</span>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Weapon</th>
+          <th class="n">Robots</th>
+          <th class="n">Battle W-L</th>
+          <th class="n">Battle %</th>
+          <th class="n">Career %</th>
+          <th class="n">KO %</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let w of meta">
+          <td class="cap">{{ pretty(w.weapon) }}</td>
+          <td class="n">{{ w.robots }}</td>
+          <td class="n">{{ w.battle_wins }}-{{ w.battle_losses }}</td>
+          <td class="n hi">{{ w.battle_rate }}%</td>
+          <td class="n">{{ w.win_rate }}%</td>
+          <td class="n">{{ w.ko_rate }}%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2>💥 Biggest upsets — when the favorite fell</h2>
+  <p class="sub">Historical fights the model got wrong, ranked by how strong the favorite looked.</p>
+
+  <div class="upsets" *ngIf="upsets.length; else noUpsets">
+    <div class="urow" *ngFor="let u of upsets; let i = index">
+      <span class="urank">{{ i + 1 }}</span>
+      <div class="ubody">
+        <div class="uline">
+          <b class="underdog">{{ u.actual_winner }}</b>
+          <span class="beat">beat</span>
+          <b class="fav">{{ u.favorite }}</b>
+          <span class="method">{{ u.method }}</span>
+          <span class="season">{{ u.season }}</span>
+        </div>
+        <div class="umeter">
+          <div class="ufill" [style.width.%]="u.fav_prob"></div>
+          <span class="ulabel">favorite was {{ u.fav_prob }}% to win</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #noUpsets>
+    <p class="empty">No upsets — the model called every fight correctly.</p>
+  </ng-template>
+</div>

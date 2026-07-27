@@ -74,6 +74,18 @@ def get_backtest():
     return model.backtest()
 
 
+@app.get("/weapon-meta", tags=["data"])
+def get_weapon_meta():
+    """Aggregate performance by weapon type (career + actual battle record)."""
+    return model.weapon_meta()
+
+
+@app.get("/upsets", tags=["prediction"])
+def get_upsets(limit: int = 10):
+    """Biggest historical upsets — fights where the model's favorite lost."""
+    return model.upsets(limit)
+
+
 @app.get("/tournament", tags=["prediction"])
 def get_tournament(
     robots: str = Query(..., description="Comma-separated robot names (2, 4, 8, 16…)"),
