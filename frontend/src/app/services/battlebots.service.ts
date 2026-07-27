@@ -21,8 +21,14 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class BattlebotsService {
-  /** FastAPI backend base URL. */
-  private readonly base = 'http://localhost:8000';
+  /**
+   * FastAPI backend base URL.
+   * Set `window.__API_BASE__` (in index.html) to a deployed backend for live
+   * data; otherwise defaults to localhost and, if unreachable, offline demo mode.
+   */
+  private readonly base =
+    (typeof window !== 'undefined' && (window as unknown as { __API_BASE__?: string }).__API_BASE__) ||
+    'http://localhost:8000';
 
   /** True once any call has fallen back to the offline engine. */
   readonly demoMode = signal(false);

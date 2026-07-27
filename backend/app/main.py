@@ -16,10 +16,11 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Allow the Angular dev server to call the API.
+# Public read-only API — allow any origin so the deployed frontend (and local
+# dev server) can call it. No credentials are used.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200", "http://127.0.0.1:4200"],
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
