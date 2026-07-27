@@ -15,7 +15,7 @@
 .legend .key.a { background: var(--accent); margin-left: 0; }
 .legend .key.b { background: var(--accent2); }
 
-.radar { width: 260px; height: 260px; max-width: 100%; }
+.radar { width: 100%; max-width: 340px; height: auto; }
 
 .ring { fill: none; stroke: var(--line); stroke-width: 1; }
 .spoke { stroke: var(--line); stroke-width: 1; }

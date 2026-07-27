@@ -4,7 +4,7 @@
     <span class="key b"></span>{{ labelB }}
   </div>
 
-  <svg [attr.viewBox]="'0 0 ' + size + ' ' + size" class="radar">
+  <svg [attr.viewBox]="viewBox" class="radar">
     <!-- grid rings -->
     <polygon *ngFor="let ring of rings"
              [attr.points]="ringPolygon(ring)"

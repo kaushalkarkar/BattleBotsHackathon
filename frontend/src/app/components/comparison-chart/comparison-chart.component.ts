@@ -32,7 +32,13 @@ export class ComparisonChartComponent implements OnChanges {
   readonly cx = 130;
   readonly cy = 135;
   readonly r = 95;
+  readonly padX = 64; // horizontal breathing room so side labels never clip
   readonly rings = [0.25, 0.5, 0.75, 1];
+
+  /** viewBox widened horizontally so left/right axis labels are never cut off. */
+  get viewBox(): string {
+    return `${-this.padX} 0 ${this.size + this.padX * 2} ${this.size}`;
+  }
 
   axisPoints: Point[] = [];      // outer tip of each axis (for labels/spokes)
   labelPoints: Point[] = [];     // slightly outside for text

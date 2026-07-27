@@ -60,9 +60,9 @@ export class PredictorComponent implements OnChanges {
     const maxFights = Math.max(1, ...this.robots.map(r => r.wins + r.losses));
 
     return [
-      { label: 'Win rate', a: p.signals.win_rate.a / 100, b: p.signals.win_rate.b / 100 },
-      { label: 'Finishing', a: p.signals.ko_rate.a / 100, b: p.signals.ko_rate.b / 100 },
-      { label: 'Weapon edge', a: 0.5 + p.signals.weapon_edge.a, b: 0.5 + p.signals.weapon_edge.b },
+      { label: 'Win %', a: p.signals.win_rate.a / 100, b: p.signals.win_rate.b / 100 },
+      { label: 'KO %', a: p.signals.ko_rate.a / 100, b: p.signals.ko_rate.b / 100 },
+      { label: 'Weapon', a: 0.5 + p.signals.weapon_edge.a, b: 0.5 + p.signals.weapon_edge.b },
       { label: 'Experience', a: fights(p.robot_a) / maxFights, b: fights(p.robot_b) / maxFights },
     ];
   }

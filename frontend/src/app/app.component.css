@@ -88,12 +88,12 @@ main {
   gap: 20px;
 }
 
-/* Mobile: sidebar becomes a horizontal scroll strip above the content. */
+/* Mobile: sidebar becomes a 2-column grid above the content (all tabs visible). */
 @media (max-width: 720px) {
-  .layout { flex-direction: column; padding: 16px; }
+  .layout { flex-direction: column; padding: 14px; gap: 14px; }
   .sidebar { position: static; flex: none; width: 100%; }
-  .sidebar nav { flex-direction: row; overflow-x: auto; }
-  .sidebar button { white-space: nowrap; }
+  .sidebar nav { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .sidebar button { justify-content: center; white-space: nowrap; }
   .sidebar button .lbl { white-space: nowrap; }
 }
 
