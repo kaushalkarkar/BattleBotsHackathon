@@ -33,6 +33,7 @@ type View = 'predict' | 'tournament' | 'backtest';
 })
 export class AppComponent implements OnInit {
   view: View = 'predict';
+  theme: 'dark' | 'light' = 'dark';
 
   robots: Robot[] = [];
   leaderboard: LeaderboardRow[] = [];
@@ -56,11 +57,32 @@ export class AppComponent implements OnInit {
   constructor(public api: BattlebotsService) {}
 
   ngOnInit(): void {
+    this.initTheme();
+
     this.api.getRobots().subscribe((robots) => {
       this.robots = robots;
       this.onPredict(['Tombstone', 'Minotaur']);
     });
     this.api.getLeaderboard().subscribe((rows) => (this.leaderboard = rows));
+  }
+
+  private initTheme(): void {
+    const saved = localStorage.getItem('bb-theme') as 'dark' | 'light' | null;
+    const prefersLight =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-color-scheme: light)').matches;
+    this.theme = saved ?? (prefersLight ? 'light' : 'dark');
+    this.applyTheme();
+  }
+
+  toggleTheme(): void {
+    this.theme = this.theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('bb-theme', this.theme);
+    this.applyTheme();
+  }
+
+  private applyTheme(): void {
+    document.documentElement.setAttribute('data-theme', this.theme);
   }
 
   setView(v: View): void {

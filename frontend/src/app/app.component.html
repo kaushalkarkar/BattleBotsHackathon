@@ -1,4 +1,9 @@
 <header>
+  <button class="theme-toggle" (click)="toggleTheme()"
+          [attr.aria-label]="theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
+          [title]="theme === 'dark' ? 'Light mode' : 'Dark mode'">
+    {{ theme === 'dark' ? '☀️' : '🌙' }}
+  </button>
   <h1>⚔️ BattleBots <span>Win Predictor</span></h1>
   <p>Predict matchups, simulate tournaments, and validate the model — all from web data collected with Bright Data.</p>
   <div class="tag">#battlebotsdev</div>

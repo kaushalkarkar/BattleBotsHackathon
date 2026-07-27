@@ -1,4 +1,6 @@
-:root {
+/* Dark theme is the default. */
+:root,
+:root[data-theme='dark'] {
   --bg: #0b0d10;
   --panel: #14181d;
   --panel2: #1b2027;
@@ -8,6 +10,21 @@
   --accent: #ff5c33;
   --accent2: #33b1ff;
   --win: #2ecc71;
+  --shadow: rgba(0, 0, 0, 0.4);
+}
+
+/* Light theme overrides (applied when the root has data-theme="light"). */
+:root[data-theme='light'] {
+  --bg: #f4f6f9;
+  --panel: #ffffff;
+  --panel2: #eef1f6;
+  --line: #dce1e9;
+  --text: #1a1f27;
+  --muted: #5c6672;
+  --accent: #e8481f;
+  --accent2: #0a7fce;
+  --win: #1f9d57;
+  --shadow: rgba(15, 23, 42, 0.12);
 }
 
 * { box-sizing: border-box; }
