@@ -1,0 +1,16 @@
+<div class="select" [class.open]="open" tabindex="0" [attr.aria-label]="ariaLabel">
+  <button type="button" class="trigger" (click)="toggle()"
+          [attr.aria-expanded]="open" aria-haspopup="listbox">
+    <span class="val" [class.placeholder]="!value">{{ value || placeholder }}</span>
+    <span class="arrow" [class.up]="open">▾</span>
+  </button>
+
+  <div class="panel" *ngIf="open" role="listbox">
+    <button type="button" class="opt" *ngFor="let o of options"
+            role="option" [attr.aria-selected]="o === value"
+            [class.sel]="o === value" (click)="pick(o)">
+      {{ o }}
+      <span class="check" *ngIf="o === value">✓</span>
+    </button>
+  </div>
+</div>

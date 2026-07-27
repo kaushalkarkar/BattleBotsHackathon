@@ -6,51 +6,63 @@
   </button>
   <h1>⚔️ BattleBots <span>Win Predictor</span></h1>
   <p>Predict matchups, simulate tournaments, and validate the model — all from web data collected with Bright Data.</p>
-  <div class="tag">#battlebotsdev</div>
+  <div class="tag">#BattleBotsDev</div>
 </header>
 
-<nav class="tabs">
-  <button [class.active]="view === 'predict'" (click)="setView('predict')">🥊 Predictor</button>
-  <button [class.active]="view === 'tournament'" (click)="setView('tournament')">🏟️ Tournament</button>
-  <button [class.active]="view === 'backtest'" (click)="setView('backtest')">🔬 Model accuracy</button>
-  <button [class.active]="view === 'insights'" (click)="setView('insights')">📈 Insights</button>
-</nav>
+<div class="layout">
+  <aside class="sidebar">
+    <nav>
+      <button [class.active]="view === 'predict'" (click)="setView('predict')">
+        <span class="ico">🥊</span><span class="lbl">Predictor</span>
+      </button>
+      <button [class.active]="view === 'tournament'" (click)="setView('tournament')">
+        <span class="ico">🏟️</span><span class="lbl">Tournament</span>
+      </button>
+      <button [class.active]="view === 'backtest'" (click)="setView('backtest')">
+        <span class="ico">🔬</span><span class="lbl">Model accuracy</span>
+      </button>
+      <button [class.active]="view === 'insights'" (click)="setView('insights')">
+        <span class="ico">📈</span><span class="lbl">Insights</span>
+      </button>
+    </nav>
+  </aside>
 
-<main>
-  <div class="offline" *ngIf="api.demoMode()">
-    🔌 <b>Demo mode</b> — using the built-in offline dataset. Start the Python backend
-    (<code>uvicorn app.main:app --reload</code>) for live data &amp; Bright Data scraping.
-  </div>
+  <main>
+    <div class="offline" *ngIf="api.demoMode()">
+      🔌 <b>Demo mode</b> — using the built-in offline dataset. Start the Python backend
+      (<code>uvicorn app.main:app --reload</code>) for live data &amp; Bright Data scraping.
+    </div>
 
-  <ng-container *ngIf="view === 'predict'">
-    <app-predictor
+    <ng-container *ngIf="view === 'predict'">
+      <app-predictor
+        [robots]="robots"
+        [prediction]="prediction"
+        [loading]="loading"
+        [error]="error"
+        (predict)="onPredict($event)">
+      </app-predictor>
+
+      <app-leaderboard [rows]="leaderboard" (openRobot)="openRobot($event)"></app-leaderboard>
+    </ng-container>
+
+    <app-tournament
+      *ngIf="view === 'tournament'"
       [robots]="robots"
-      [prediction]="prediction"
-      [loading]="loading"
-      [error]="error"
-      (predict)="onPredict($event)">
-    </app-predictor>
+      [defaultSeeds]="topSeeds"
+      [result]="tournament"
+      [loading]="tournamentLoading"
+      (run)="onRunTournament($event)">
+    </app-tournament>
 
-    <app-leaderboard [rows]="leaderboard" (openRobot)="openRobot($event)"></app-leaderboard>
-  </ng-container>
+    <app-backtest *ngIf="view === 'backtest'" [result]="backtest"></app-backtest>
 
-  <app-tournament
-    *ngIf="view === 'tournament'"
-    [robots]="robots"
-    [defaultSeeds]="topSeeds"
-    [result]="tournament"
-    [loading]="tournamentLoading"
-    (run)="onRunTournament($event)">
-  </app-tournament>
-
-  <app-backtest *ngIf="view === 'backtest'" [result]="backtest"></app-backtest>
-
-  <app-insights
-    *ngIf="view === 'insights'"
-    [meta]="weaponMeta"
-    [upsets]="upsets">
-  </app-insights>
-</main>
+    <app-insights
+      *ngIf="view === 'insights'"
+      [meta]="weaponMeta"
+      [upsets]="upsets">
+    </app-insights>
+  </main>
+</div>
 
 <app-robot-detail
   *ngIf="detailOpen"
@@ -61,5 +73,5 @@
 </app-robot-detail>
 
 <footer>
-  Built with Bright Data BattleBots web data · Angular + FastAPI · #battlebotsdev
+  Built with Bright Data BattleBots web data · Angular + FastAPI · #BattleBotsDev
 </footer>

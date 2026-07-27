@@ -6,7 +6,7 @@
 
 `Angular` frontend · `Python / FastAPI` backend · `Bright Data` web scraping
 
-`#battlebotsdev`
+`#BattleBotsDev`
 
 </div>
 
@@ -73,7 +73,7 @@ battle/
 │   ├── package.json
 │   └── README.md
 │
-├── publish/social_post.md       # ready-to-post #battlebotsdev copy
+├── publish/social_post.md       # ready-to-post #BattleBotsDev copy
 └── README.md                    # you are here
 ```
 
@@ -173,30 +173,36 @@ human-readable reasons.
 
 ---
 
-## 🏆 How this maps to the judging criteria
+## 🏆 How this maps to the official judging criteria
 
 | Criterion | How the project delivers |
 |-----------|--------------------------|
-| **Clarity & creativity** | A focused idea — predict + explain matchups — not a data dump |
-| **Technical execution (Bright Data)** | Real Web Unlocker integration with graceful offline fallback |
-| **Real-world impact / originality** | Explainable predictions with confidence, not a black box |
-| **Published with #battlebotsdev** | Ready-to-post copy in `publish/social_post.md` |
+| **Creativity & Originality** | A focused, fresh idea — predict *and explain* matchups, simulate tournaments, surface upsets |
+| **Technical Execution** | Full-stack Angular + FastAPI, backtested model (66.7% on 66 fights), offline fallback |
+| **Use of Bright Data Tools** | Web Unlocker scraper collects BattleBots data; live `/scrape` endpoint |
+| **Community Impact & Presentation** | Clear README, live demo, and a video walkthrough shared across platforms with #BattleBotsDev |
 
 ---
 
-## 📤 Publishing (for the challenge)
+## 📤 Submission checklist (official requirements)
 
-1. Push to a **public GitHub repo**.
-2. Deploy the frontend (GitHub Pages / Netlify / Vercel) and the backend
-   (Render / Railway / Fly.io) for a live link.
-3. Post on GitHub / X / LinkedIn / Dev.to tagged **#battlebotsdev**
-   (copy in [`publish/social_post.md`](publish/social_post.md)).
-4. Submit at https://brightdata.com/lp/battlebots **before 31 July 2026**.
+Per the competition terms, a valid entry needs **all four**:
+
+1. **Public repo + README** — ✅ this repo, with setup docs and how Bright Data is used.
+2. **Live demo** — deployed and functional (see the link at the top).
+3. **Video walkthrough** — record a demo and post it on **multiple platforms**
+   (YouTube, LinkedIn, X/Twitter, Instagram, TikTok), each tagged **#BattleBotsDev**
+   (the hashtag is mandatory). A ready script is in [`VIDEO_SCRIPT.md`](VIDEO_SCRIPT.md).
+4. **Official form** — submit repo + demo + all video links at
+   https://forms.gle/ASSkdTaMhpm5Lai36
+
+Ready-to-post copy: [`publish/social_post.md`](publish/social_post.md) ·
+Free Bright Data credits: https://brdta.com/battlebotsdev (code `BattleBotsDev`).
 
 ---
 
 <div align="center">
 
-Built with [Bright Data](https://brightdata.com) · **#battlebotsdev**
+Built with [Bright Data](https://brightdata.com) · **#BattleBotsDev**
 
 </div>

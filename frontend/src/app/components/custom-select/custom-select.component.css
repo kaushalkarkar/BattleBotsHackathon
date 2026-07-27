@@ -1,0 +1,74 @@
+:host { display: block; }
+
+.select { position: relative; outline: none; }
+
+.trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px;
+  background: var(--panel2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: left;
+}
+.trigger:hover { border-color: var(--accent); }
+.select.open .trigger { border-color: var(--accent); }
+.select:focus-visible .trigger { border-color: var(--accent); }
+
+.val { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.val.placeholder { color: var(--muted); }
+
+.arrow {
+  color: var(--muted);
+  font-size: 12px;
+  transition: transform .15s;
+}
+.arrow.up { transform: rotate(180deg); }
+
+.panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-height: 260px;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 5px;
+  box-shadow: 0 12px 30px var(--shadow, rgba(0, 0, 0, 0.4));
+}
+
+.opt {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 10px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+}
+.opt:hover { background: var(--panel2); }
+.opt.sel {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.check { font-size: 12px; }
+
+/* Slimmer variant for tight grids (tournament seeds). */
+:host(.compact) .trigger { padding: 8px 10px; font-size: 13px; }
+:host(.compact) .opt { padding: 7px 9px; font-size: 13px; }

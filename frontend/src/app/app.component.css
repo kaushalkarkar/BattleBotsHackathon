@@ -33,37 +33,68 @@ header p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
   border-radius: 20px; font-size: 12px; font-weight: 600;
 }
 
-.tabs {
+/* Sidebar + content layout */
+.layout {
   display: flex;
-  gap: 8px;
-  justify-content: center;
-  padding: 16px 20px 0;
-  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 20px;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 20px;
 }
-.tabs button {
+
+.sidebar {
+  flex: 0 0 210px;
+  position: sticky;
+  top: 20px;
+}
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   background: var(--panel);
   border: 1px solid var(--line);
-  color: var(--muted);
-  padding: 9px 16px;
+  border-radius: 14px;
+  padding: 8px;
+}
+.sidebar button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  background: none;
+  border: none;
   border-radius: 10px;
+  color: var(--muted);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  text-align: left;
 }
-.tabs button:hover { color: var(--text); }
-.tabs button.active {
+.sidebar button .ico { font-size: 16px; line-height: 1; }
+.sidebar button:hover { background: var(--panel2); color: var(--text); }
+.sidebar button.active {
   background: var(--accent);
-  border-color: var(--accent);
   color: #0b0d10;
 }
+.sidebar button.active:hover { background: var(--accent); }
 
 main {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 20px;
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+/* Mobile: sidebar becomes a horizontal scroll strip above the content. */
+@media (max-width: 720px) {
+  .layout { flex-direction: column; padding: 16px; }
+  .sidebar { position: static; flex: none; width: 100%; }
+  .sidebar nav { flex-direction: row; overflow-x: auto; }
+  .sidebar button { white-space: nowrap; }
+  .sidebar button .lbl { white-space: nowrap; }
 }
 
 .offline {

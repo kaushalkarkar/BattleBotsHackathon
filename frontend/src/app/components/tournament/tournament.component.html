@@ -4,9 +4,12 @@
   <div class="seeds">
     <div class="seed" *ngFor="let s of seeds; let i = index">
       <label>Seed {{ i + 1 }}</label>
-      <select [(ngModel)]="seeds[i]">
-        <option *ngFor="let r of robots" [value]="r.robot">{{ r.robot }}</option>
-      </select>
+      <app-custom-select class="compact"
+        [options]="robotNames"
+        [value]="seeds[i]"
+        (valueChange)="setSeed(i, $event)"
+        [ariaLabel]="'Seed ' + (i + 1)">
+      </app-custom-select>
     </div>
   </div>
 

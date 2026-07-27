@@ -2,18 +2,14 @@
   <div class="pickers">
     <div class="field">
       <label>Robot A</label>
-      <select [(ngModel)]="robotA">
-        <option *ngFor="let r of robots" [value]="r.robot">{{ r.robot }}</option>
-      </select>
+      <app-custom-select [options]="robotNames" [(value)]="robotA" ariaLabel="Robot A"></app-custom-select>
     </div>
 
     <div class="vs">VS</div>
 
     <div class="field">
       <label>Robot B</label>
-      <select [(ngModel)]="robotB">
-        <option *ngFor="let r of robots" [value]="r.robot">{{ r.robot }}</option>
-      </select>
+      <app-custom-select [options]="robotNames" [(value)]="robotB" ariaLabel="Robot B"></app-custom-select>
     </div>
 
     <button (click)="onPredict()" [disabled]="sameRobot || loading">

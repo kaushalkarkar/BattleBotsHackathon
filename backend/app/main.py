@@ -12,7 +12,7 @@ from . import scraper
 
 app = FastAPI(
     title="BattleBots Win Predictor API",
-    description="Predict BattleBots matchups from web data collected via Bright Data. #battlebotsdev",
+    description="Predict BattleBots matchups from web data collected via Bright Data. #BattleBotsDev",
     version="1.0.0",
 )
 

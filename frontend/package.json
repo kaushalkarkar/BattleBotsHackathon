@@ -1,7 +1,7 @@
 {
   "name": "battlebots-predictor-frontend",
   "version": "1.0.0",
-  "description": "Angular frontend for the BattleBots Win Predictor — #battlebotsdev",
+  "description": "Angular frontend for the BattleBots Win Predictor — #BattleBotsDev",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

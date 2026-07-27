@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Prediction, Robot } from '../../models/battlebots.models';
 import { ComparisonChartComponent, RadarAxis } from '../comparison-chart/comparison-chart.component';
+import { CustomSelectComponent } from '../custom-select/custom-select.component';
 
 @Component({
   selector: 'app-predictor',
   standalone: true,
-  imports: [CommonModule, FormsModule, ComparisonChartComponent],
+  imports: [CommonModule, FormsModule, ComparisonChartComponent, CustomSelectComponent],
   templateUrl: './predictor.component.html',
   styleUrl: './predictor.component.css',
 })
@@ -23,6 +24,10 @@ export class PredictorComponent implements OnChanges {
   robotA = '';
   robotB = '';
   radarAxes: RadarAxis[] = [];
+
+  get robotNames(): string[] {
+    return this.robots.map((r) => r.robot);
+  }
 
   ngOnChanges(): void {
     // Set sensible defaults once robots arrive.

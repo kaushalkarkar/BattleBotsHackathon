@@ -2,11 +2,12 @@ import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BracketMatch, Robot, TournamentResult } from '../../models/battlebots.models';
+import { CustomSelectComponent } from '../custom-select/custom-select.component';
 
 @Component({
   selector: 'app-tournament',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CustomSelectComponent],
   templateUrl: './tournament.component.html',
   styleUrl: './tournament.component.css',
 })
@@ -21,6 +22,14 @@ export class TournamentComponent implements OnChanges {
 
   seeds: string[] = [];
   readonly slots = 8;
+
+  get robotNames(): string[] {
+    return this.robots.map((r) => r.robot);
+  }
+
+  setSeed(i: number, value: string): void {
+    this.seeds[i] = value;
+  }
 
   ngOnChanges(): void {
     if (this.robots.length && this.seeds.length === 0) {
