@@ -1,47 +1,53 @@
-# Ready-to-post copy for #battlebotsdev
+# 📣 #battlebotsdev — ready-to-post copy
 
-Post publicly (GitHub, X, LinkedIn, Dev.to, Reddit, or your blog) and tag
-**#battlebotsdev** for extra visibility with the Bright Data team.
+**Your links:**
+- 🔗 Live demo: https://battle-bots-hackathon.vercel.app/
+- 💻 GitHub: https://github.com/kaushalkarkar/BattleBotsHackathon
+
+Post publicly on at least one platform and tag **#battlebotsdev** for extra
+visibility with the Bright Data team.
 
 ---
 
 ## X / Twitter
 Built a full-stack **BattleBots Win Predictor** 🤖⚔️
 
-Angular + FastAPI. Pick any two bots → it predicts the winner AND explains why,
-using career win rate, KO/finishing power & a weapon-vs-weapon matchup model.
+Pick any two bots → it predicts the winner AND explains why (career win rate,
+KO power, weapon-vs-weapon matchup). Plus a tournament simulator and a model
+backtest that hits 66.7% on 66 real fights.
 
-Data collected with @bright_data. Code + live demo 👇
-[your link]
+Data collected with @bright_data · Angular + FastAPI
+
+🔗 Live: https://battle-bots-hackathon.vercel.app/
+💻 Code: https://github.com/kaushalkarkar/BattleBotsHackathon
 
 #battlebotsdev
 
 ---
 
 ## LinkedIn
-For the Bright Data × BattleBots challenge, I built a full-stack **Win Prediction Engine**.
+For the Bright Data × BattleBots challenge, I built a full-stack **Win Prediction Engine**. 🤖⚔️
 
 🔹 Bright Data's Web Unlocker collects BattleBots match history, weapon specs & KO records
 🔹 A FastAPI backend scores each matchup on form, finishing power & weapon advantage
-🔹 An Angular dashboard shows the predicted winner, confidence, reasoning & a live leaderboard
+🔹 An Angular dashboard shows the predicted winner, confidence, a radar comparison, robot profiles, a tournament bracket simulator, and a live leaderboard
+🔹 I backtested the model on 66 real fights → 66.7% accuracy (vs 50% coin-flip), and confidence correlates with accuracy (HIGH 80% → LOW 59%)
 
 No black box — every prediction is explained. Substance over polish.
 
 Stack: Angular 17 · FastAPI · pandas · Bright Data
-Code: [github link]  ·  Live demo: [deploy link]
+
+🔗 Live demo: https://battle-bots-hackathon.vercel.app/
+💻 Code: https://github.com/kaushalkarkar/BattleBotsHackathon
+
 #battlebotsdev
 
 ---
 
-## GitHub repo description
-Full-stack BattleBots matchup win predictor (Angular + FastAPI) powered by Bright Data web data. #battlebotsdev
+## GitHub repo "About" description
+Full-stack BattleBots matchup win predictor (Angular + FastAPI) powered by Bright Data web data — with tournament simulator and a backtested model. #battlebotsdev
 
 ---
 
-## Submission checklist
-- [ ] Push code to a public GitHub repo
-- [ ] Deploy frontend (GitHub Pages / Netlify / Vercel)
-- [ ] Deploy backend (Render / Railway / Fly.io)
-- [ ] Add BRIGHTDATA_API_KEY to enable live scraping
-- [ ] Post on at least one platform tagged #battlebotsdev
-- [ ] Submit via the form on https://brightdata.com/lp/battlebots (before 31 July 2026)
+## Reddit / Dev.to title
+I built a BattleBots matchup predictor + tournament simulator with Bright Data (Angular + FastAPI)
