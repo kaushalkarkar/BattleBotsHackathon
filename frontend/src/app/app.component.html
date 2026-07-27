@@ -28,11 +28,6 @@
   </aside>
 
   <main>
-    <div class="offline" *ngIf="api.demoMode()">
-      🔌 <b>Demo mode</b> — using the built-in offline dataset. Start the Python backend
-      (<code>uvicorn app.main:app --reload</code>) for live data &amp; Bright Data scraping.
-    </div>
-
     <ng-container *ngIf="view === 'predict'">
       <app-predictor
         [robots]="robots"
