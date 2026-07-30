@@ -23,72 +23,81 @@ import {
   localWeaponMeta,
 } from './local-engine';
 
+/**
+ * Resolve the backend base URL:
+ *  - `window.__API_BASE__` (set in index.html) wins if provided,
+ *  - otherwise use localhost only when the app is actually served from localhost
+ *    (local dev),
+ *  - otherwise ('' = empty) run fully offline on the built-in engine — so the
+ *    deployed site never tries to reach the visitor's own localhost.
+ */
+function resolveBase(): string {
+  if (typeof window === 'undefined') return '';
+  const override = (window as unknown as { __API_BASE__?: string }).__API_BASE__;
+  if (override) return override;
+  const host = window.location.hostname;
+  return host === 'localhost' || host === '127.0.0.1' ? 'http://localhost:8000' : '';
+}
+
 @Injectable({ providedIn: 'root' })
 export class BattlebotsService {
-  /**
-   * FastAPI backend base URL.
-   * Set `window.__API_BASE__` (in index.html) to a deployed backend for live
-   * data; otherwise defaults to localhost and, if unreachable, offline demo mode.
-   */
-  private readonly base =
-    (typeof window !== 'undefined' && (window as unknown as { __API_BASE__?: string }).__API_BASE__) ||
-    'http://localhost:8000';
+  private readonly base = resolveBase();
 
-  /** True once any call has fallen back to the offline engine. */
+  /** True whenever data is served by the offline engine instead of a live API. */
   readonly demoMode = signal(false);
 
   constructor(private http: HttpClient) {}
 
   getRobots(): Observable<Robot[]> {
-    return this.http.get<Robot[]>(`${this.base}/robots`).pipe(
-      catchError(() => this.fallback(localRobots())),
-    );
+    return this.wrap(() => this.http.get<Robot[]>(`${this.base}/robots`), () => localRobots());
   }
 
   getLeaderboard(): Observable<LeaderboardRow[]> {
-    return this.http.get<LeaderboardRow[]>(`${this.base}/leaderboard`).pipe(
-      catchError(() => this.fallback(localLeaderboard())),
-    );
+    return this.wrap(() => this.http.get<LeaderboardRow[]>(`${this.base}/leaderboard`), () => localLeaderboard());
   }
 
   predict(a: string, b: string): Observable<Prediction> {
-    return this.http.get<Prediction>(`${this.base}/predict`, { params: { a, b } }).pipe(
-      catchError(() => this.fallback(localPredict(a, b))),
+    return this.wrap(
+      () => this.http.get<Prediction>(`${this.base}/predict`, { params: { a, b } }),
+      () => localPredict(a, b),
     );
   }
 
   getRobot(name: string): Observable<RobotDetail> {
-    return this.http.get<RobotDetail>(`${this.base}/robot/${encodeURIComponent(name)}`).pipe(
-      catchError(() => this.fallback(localRobotDetail(name))),
+    return this.wrap(
+      () => this.http.get<RobotDetail>(`${this.base}/robot/${encodeURIComponent(name)}`),
+      () => localRobotDetail(name),
     );
   }
 
   getBacktest(): Observable<BacktestResult> {
-    return this.http.get<BacktestResult>(`${this.base}/backtest`).pipe(
-      catchError(() => this.fallback(localBacktest())),
-    );
+    return this.wrap(() => this.http.get<BacktestResult>(`${this.base}/backtest`), () => localBacktest());
   }
 
   getTournament(names: string[]): Observable<TournamentResult> {
-    const params = { robots: names.join(',') };
-    return this.http.get<TournamentResult>(`${this.base}/tournament`, { params }).pipe(
-      catchError(() => this.fallback(localTournament(names))),
+    return this.wrap(
+      () => this.http.get<TournamentResult>(`${this.base}/tournament`, { params: { robots: names.join(',') } }),
+      () => localTournament(names),
     );
   }
 
   getWeaponMeta(): Observable<WeaponMeta[]> {
-    return this.http.get<WeaponMeta[]>(`${this.base}/weapon-meta`).pipe(
-      catchError(() => this.fallback(localWeaponMeta())),
-    );
+    return this.wrap(() => this.http.get<WeaponMeta[]>(`${this.base}/weapon-meta`), () => localWeaponMeta());
   }
 
   getUpsets(): Observable<Upset[]> {
-    return this.http.get<Upset[]>(`${this.base}/upsets`).pipe(
-      catchError(() => this.fallback(localUpsets(10))),
-    );
+    return this.wrap(() => this.http.get<Upset[]>(`${this.base}/upsets`), () => localUpsets(10));
   }
 
-  /** Flip the app into demo mode and emit locally-computed data instead. */
+  /**
+   * If no backend is configured, serve the offline result directly (no network
+   * request). Otherwise hit the API and fall back to offline on any error.
+   */
+  private wrap<T>(live: () => Observable<T>, local: () => T): Observable<T> {
+    if (!this.base) return this.fallback(local());
+    return live().pipe(catchError(() => this.fallback(local())));
+  }
+
   private fallback<T>(value: T): Observable<T> {
     return of(value).pipe(tap(() => this.demoMode.set(true)));
   }

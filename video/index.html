@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BattleBots Win Predictor — narrated demo</title>
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#14181d; --panel2:#1b2027; --line:#262d36;
+    --text:#e8edf2; --muted:#8b97a5; --accent:#ff5c33; --accent2:#33b1ff; --win:#2ecc71;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#000;color:var(--text);font-family:'Inter',system-ui,'Segoe UI',Roboto,Arial,sans-serif;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:14px;padding:16px}
+  /* 16:9 stage that scales to the window */
+  .stage{position:relative;width:min(96vw,1180px);aspect-ratio:16/9;background:var(--bg);
+    border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .progress{position:absolute;top:0;left:0;height:4px;background:var(--accent);width:0;z-index:5;transition:width .3s linear}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:5% 7%;gap:20px;opacity:0;transform:translateY(14px);transition:opacity .5s,transform .5s;pointer-events:none;text-align:center}
+  .slide.active{opacity:1;transform:none}
+  .kicker{color:var(--accent);font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:clamp(10px,1.4vw,14px)}
+  h1{font-size:clamp(24px,4.6vw,52px);line-height:1.1}
+  h1 .a{color:var(--accent)} h1 .b{color:var(--accent2)}
+  h2{font-size:clamp(20px,3.4vw,38px)}
+  .sub{color:var(--muted);font-size:clamp(12px,1.8vw,18px);max-width:80%}
+  .tag{display:inline-block;padding:6px 16px;border:1px solid var(--accent);color:var(--accent);
+    border-radius:24px;font-weight:700;font-size:clamp(11px,1.6vw,16px)}
+  /* caption / subtitles */
+  .caption{position:absolute;left:0;right:0;bottom:70px;text-align:center;padding:0 8%;
+    color:#dfe6ee;font-size:clamp(12px,1.7vw,17px);text-shadow:0 2px 8px #000;z-index:4}
+  /* controls */
+  .controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center}
+  button{background:var(--accent);color:#0b0d10;border:none;border-radius:10px;padding:11px 20px;
+    font-size:15px;font-weight:700;cursor:pointer}
+  button.ghost{background:var(--panel);color:var(--text);border:1px solid var(--line)}
+  button:hover{filter:brightness(1.08)}
+  .count{color:var(--muted);font-size:13px}
+  .hint{color:var(--muted);font-size:12px;text-align:center;max-width:640px}
+  /* recreated visuals */
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;width:min(760px,86%)}
+  .bar{height:34px;border-radius:8px;overflow:hidden;display:flex;background:var(--panel2);margin:10px 0}
+  .bar .x{display:flex;align-items:center;font-weight:800;color:#0b0d10;font-size:15px}
+  .bar .xa{background:var(--accent);justify-content:flex-start;padding-left:12px}
+  .bar .xb{background:var(--accent2);justify-content:flex-end;padding-right:12px}
+  .reasons{text-align:left;color:#cdd6e0;font-size:clamp(11px,1.5vw,15px);line-height:1.7;margin-top:8px}
+  .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .pill{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:clamp(11px,1.5vw,15px)}
+  .big{font-size:clamp(40px,8vw,90px);font-weight:800;color:var(--win);line-height:1}
+  .mini{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .slot{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-size:clamp(10px,1.4vw,14px)}
+  .slot.win{background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent);font-weight:700;border-color:var(--accent)}
+  .champ{background:linear-gradient(135deg,var(--accent),#ff8a5c);color:#0b0d10;font-weight:800;border-radius:12px;padding:12px 20px;font-size:clamp(13px,2vw,20px)}
+  .wbar{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:clamp(11px,1.5vw,15px)}
+  .wbar .wl{width:120px;text-align:right;color:var(--muted)}
+  .wbar .wt{flex:1;height:12px;background:var(--panel2);border-radius:6px;overflow:hidden}
+  .wbar .wf{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+  .flow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;font-weight:700;font-size:clamp(12px,1.8vw,18px)}
+  .flow .n{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 16px}
+  .flow .arr{color:var(--accent)}
+  .link{color:var(--accent2);font-size:clamp(12px,1.7vw,17px)}
+  svg{max-width:100%}
+</style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div class="progress" id="progress"></div>
+
+    <!-- 1 intro -->
+    <section class="slide">
+      <div class="kicker">Bright Data · BattleBotsDev</div>
+      <h1>⚔️ BattleBots <span class="a">Win</span> <span class="b">Predictor</span></h1>
+      <p class="sub">A full-stack app that predicts who wins any BattleBots matchup — from web data collected with Bright Data.</p>
+      <div class="tag">#BattleBotsDev</div>
+    </section>
+
+    <!-- 2 predictor -->
+    <section class="slide">
+      <div class="kicker">Predict &amp; explain</div>
+      <h2>Who wins — and <span style="color:var(--accent)">why</span>?</h2>
+      <div class="card">
+        <div style="text-align:left;color:var(--win);font-weight:700;font-size:18px">Predicted winner: Tombstone 🏆 <span style="color:var(--muted);font-weight:400;font-size:13px">· confidence LOW</span></div>
+        <div class="bar"><div class="x xa" style="width:51.8%">51.8%</div><div class="x xb" style="width:48.2%">48.2%</div></div>
+        <div class="reasons">• Tombstone has the stronger career win rate (72% vs 68%).<br>• Tombstone finishes fights — 73% of its wins are KOs.<br>• Head-to-head record: Tombstone 0 - 1 Minotaur.</div>
+      </div>
+    </section>
+
+    <!-- 3 radar -->
+    <section class="slide">
+      <div class="kicker">Compare</div>
+      <h2>Every signal, side by side</h2>
+      <svg viewBox="0 0 300 240" width="440">
+        <polygon points="150,40 250,120 150,200 50,120" fill="none" stroke="#262d36"/>
+        <polygon points="150,65 210,120 150,175 90,120" fill="none" stroke="#262d36"/>
+        <polygon points="150,55 225,120 150,180 78,120" fill="rgba(255,92,51,.28)" stroke="#ff5c33" stroke-width="2"/>
+        <polygon points="150,72 205,120 150,168 96,120" fill="rgba(51,177,255,.24)" stroke="#33b1ff" stroke-width="2"/>
+        <text x="150" y="30" fill="#8b97a5" font-size="11" text-anchor="middle">Win %</text>
+        <text x="262" y="123" fill="#8b97a5" font-size="11">KO %</text>
+        <text x="150" y="218" fill="#8b97a5" font-size="11" text-anchor="middle">Weapon</text>
+        <text x="38" y="123" fill="#8b97a5" font-size="11" text-anchor="end">Experience</text>
+      </svg>
+      <p class="sub">Win rate, finishing power, weapon edge and experience.</p>
+    </section>
+
+    <!-- 4 robot profiles -->
+    <section class="slide">
+      <div class="kicker">Robot profiles</div>
+      <h2>Full stats &amp; match history</h2>
+      <div class="card" style="text-align:left">
+        <div style="display:flex;align-items:center;gap:12px"><span style="color:var(--accent);font-weight:800;font-size:18px">#1</span><b style="font-size:20px">Bite Force</b><span style="color:var(--muted);font-size:13px">drum spinner · Paul Ventimiglia</span></div>
+        <div class="row" style="margin:12px 0;justify-content:flex-start">
+          <span class="pill">83.3% win</span><span class="pill">20-4</span><span class="pill">45% KO</span><span class="pill">250 lb</span>
+        </div>
+        <div class="reasons">2024 · <span style="color:#ff6b6b">Loss</span> vs End Game &nbsp;·&nbsp; 2019 · <span style="color:var(--win)">Win</span> vs Tombstone &nbsp;·&nbsp; 2018 · <span style="color:var(--win)">Win</span> vs Lock-Jaw</div>
+      </div>
+    </section>
+
+    <!-- 5 tournament -->
+    <section class="slide">
+      <div class="kicker">Tournament simulator</div>
+      <h2>Predict the champion</h2>
+      <div class="mini">
+        <span class="slot">Bite Force</span><span class="slot win">End Game ›</span>
+        <span class="arr" style="color:var(--accent)">→</span>
+        <span class="slot win">End Game ›</span>
+        <span class="arr" style="color:var(--accent)">→</span>
+        <span class="champ">🏆 End Game</span>
+      </div>
+      <p class="sub">A full single-elimination bracket, simulated fight by fight.</p>
+    </section>
+
+    <!-- 6 backtest -->
+    <section class="slide">
+      <div class="kicker">Rigor, not guessing</div>
+      <h2>Backtested on 66 real fights</h2>
+      <div class="big">66.7%</div>
+      <div class="row">
+        <span class="pill">HIGH conf → 80%</span>
+        <span class="pill">MEDIUM → 72%</span>
+        <span class="pill">LOW → 59%</span>
+      </div>
+      <p class="sub">Accuracy rises with confidence — the model knows when it knows.</p>
+    </section>
+
+    <!-- 7 insights -->
+    <section class="slide">
+      <div class="kicker">Insights</div>
+      <h2>Weapon meta &amp; biggest upsets</h2>
+      <div class="card">
+        <div class="wbar"><span class="wl">Vertical spinner</span><span class="wt"><span class="wf" style="width:60%"></span></span><b>60%</b></div>
+        <div class="wbar"><span class="wl">Drum spinner</span><span class="wt"><span class="wf" style="width:54%"></span></span><b>54%</b></div>
+        <div class="wbar"><span class="wl">Horizontal</span><span class="wt"><span class="wf" style="width:41%"></span></span><b>41%</b></div>
+        <div class="reasons" style="margin-top:12px">💥 Biggest upset: <b style="color:var(--win)">Gruff</b> beat Jäger — favorite was 61.7% to win.</div>
+      </div>
+    </section>
+
+    <!-- 8 tech -->
+    <section class="slide">
+      <div class="kicker">Under the hood</div>
+      <h2>Angular · FastAPI · Bright Data</h2>
+      <div class="flow">
+        <span class="n">Angular</span><span class="arr">▶</span>
+        <span class="n">FastAPI</span><span class="arr">▶</span>
+        <span class="n">Bright Data</span>
+      </div>
+      <p class="sub">Web Unlocker scrapes the data; light &amp; dark themes included.</p>
+    </section>
+
+    <!-- 9 close -->
+    <section class="slide">
+      <div class="kicker">Built with Bright Data</div>
+      <h1>Thanks for watching ⚔️</h1>
+      <p class="link">battle-bots-hackathon.vercel.app</p>
+      <p class="link">github.com/kaushalkarkar/BattleBotsHackathon</p>
+      <div class="tag">#BattleBotsDev</div>
+    </section>
+
+    <div class="caption" id="caption"></div>
+  </div>
+
+  <div class="controls">
+    <button id="play">▶ Play</button>
+    <button class="ghost" id="restart">↺ Restart</button>
+    <button class="ghost" id="full">⛶ Fullscreen</button>
+    <span class="count" id="count">Slide 1 / 9</span>
+  </div>
+  <p class="hint">Press <b>Play</b>, then screen-record this window (or use it fullscreen) to produce your submission video. Voiceover plays automatically.</p>
+
+  <audio id="audio"></audio>
+
+<script>
+  const CAPTIONS = [
+    "This is the BattleBots Win Predictor — a full-stack app that predicts who wins any BattleBots matchup, using robot data collected with Bright Data.",
+    "Pick any two robots and hit predict. It shows a win probability, a confidence level, and explains exactly why — no black box.",
+    "A radar chart compares the two robots across win rate, finishing power, weapon edge and experience.",
+    "Click any robot to see its full stats and match history, and jump between past opponents.",
+    "The tournament simulator runs a full single-elimination bracket and predicts the champion.",
+    "Backtested on 66 real fights: 66.7% accurate — and more accurate when it's more confident. This isn't guessing.",
+    "The Insights tab shows which weapon types dominate, and surfaces the biggest historical upsets.",
+    "Scraped with Bright Data's Web Unlocker. Backend is Python FastAPI, frontend is Angular, with light and dark themes.",
+    "Open source, with a live demo. Built with Bright Data. #BattleBotsDev."
+  ];
+  const slides = [...document.querySelectorAll('.slide')];
+  const audio = document.getElementById('audio');
+  const progress = document.getElementById('progress');
+  const caption = document.getElementById('caption');
+  const count = document.getElementById('count');
+  const playBtn = document.getElementById('play');
+  let i = 0, playing = false;
+
+  function show(n){
+    slides.forEach((s,k)=>s.classList.toggle('active', k===n));
+    caption.textContent = CAPTIONS[n];
+    count.textContent = `Slide ${n+1} / ${slides.length}`;
+    progress.style.width = ((n+1)/slides.length*100) + '%';
+  }
+  function playSlide(n){
+    i = n; show(n);
+    audio.src = `audio/slide${n+1}.wav`;
+    audio.play().catch(()=>{});
+  }
+  audio.addEventListener('ended', ()=>{
+    if(!playing) return;
+    if(i < slides.length-1){ playSlide(i+1); }
+    else { playing = false; playBtn.textContent = '▶ Replay'; }
+  });
+  playBtn.onclick = ()=>{
+    if(playing){ audio.pause(); playing=false; playBtn.textContent='▶ Resume';
+      if(i>=slides.length-1){ playSlide(0); playing=true; playBtn.textContent='⏸ Pause'; } }
+    else { playing=true; playBtn.textContent='⏸ Pause';
+      if(audio.src && i<slides.length-1 && !audio.ended && audio.currentTime>0){ audio.play(); }
+      else { playSlide(i>=slides.length-1?0:i); } }
+  };
+  document.getElementById('restart').onclick = ()=>{ playing=true; playBtn.textContent='⏸ Pause'; playSlide(0); };
+  document.getElementById('full').onclick = ()=>{
+    const el = document.getElementById('stage');
+    if(!document.fullscreenElement) el.requestFullscreen?.(); else document.exitFullscreen?.();
+  };
+  show(0);
+</script>
+</body>
+</html>

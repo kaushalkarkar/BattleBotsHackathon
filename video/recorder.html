@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BattleBots demo — video recorder</title>
+<style>
+  body{background:#0b0d10;color:#e8edf2;font-family:'Inter',system-ui,'Segoe UI',Roboto,Arial,sans-serif;
+    display:flex;flex-direction:column;align-items:center;gap:16px;padding:20px;margin:0}
+  canvas{width:min(96vw,900px);aspect-ratio:16/9;border:1px solid #262d36;border-radius:12px;background:#0b0d10}
+  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center}
+  button{background:#ff5c33;color:#0b0d10;border:none;border-radius:10px;padding:12px 22px;font-size:15px;font-weight:700;cursor:pointer}
+  button.ghost{background:#14181d;color:#e8edf2;border:1px solid #262d36}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  #status{color:#8b97a5;font-size:14px;min-height:20px;text-align:center}
+  a#dl{color:#33b1ff}
+  .hint{color:#8b97a5;font-size:12px;max-width:680px;text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+  <canvas id="c" width="1280" height="720"></canvas>
+  <div class="row">
+    <button id="rec">● Record video</button>
+    <button class="ghost" id="preview">▶ Preview (no record)</button>
+    <span id="status">Ready. Click “Record video” — it plays the narrated demo and downloads the file when done (~1.5 min).</span>
+  </div>
+  <div id="out"></div>
+  <p class="hint">Keep this tab focused while recording. When it finishes, your browser downloads an <b>.mp4</b> (or <b>.webm</b> if your browser doesn’t support mp4 recording — YouTube/LinkedIn/X all accept webm). Don’t mute the tab, or the voiceover won’t be captured.</p>
+
+  <audio id="audio" crossorigin="anonymous"></audio>
+
+<script>
+const C = document.getElementById('c'), X = C.getContext('2d');
+const W = 1280, H = 720;
+const audio = document.getElementById('audio');
+const statusEl = document.getElementById('status');
+const COL = { bg:'#0b0d10', panel:'#14181d', panel2:'#1b2027', line:'#262d36',
+  text:'#e8edf2', muted:'#8b97a5', accent:'#ff5c33', accent2:'#33b1ff', win:'#2ecc71' };
+
+const CAPTIONS = [
+  "This is the BattleBots Win Predictor — predicts who wins any BattleBots matchup, using data collected with Bright Data.",
+  "Pick any two robots and hit predict. It shows a win probability, a confidence level, and explains exactly why — no black box.",
+  "A radar chart compares the two robots across win rate, finishing power, weapon edge and experience.",
+  "Click any robot to see its full stats and match history, and jump between past opponents.",
+  "The tournament simulator runs a full single-elimination bracket and predicts the champion.",
+  "Backtested on 66 real fights: 66.7% accurate — and more accurate when it's more confident. This isn't guessing.",
+  "The Insights tab shows which weapon types dominate, and surfaces the biggest historical upsets.",
+  "Scraped with Bright Data's Web Unlocker. Python FastAPI backend, Angular frontend, light and dark themes.",
+  "Open source, with a live demo. Built with Bright Data. Hashtag BattleBotsDev."
+];
+
+/* ---------- canvas helpers ---------- */
+function rr(x,y,w,h,r){X.beginPath();X.moveTo(x+r,y);X.arcTo(x+w,y,x+w,y+h,r);X.arcTo(x+w,y+h,x,y+h,r);X.arcTo(x,y+h,x,y,r);X.arcTo(x,y,x+w,y,r);X.closePath();}
+function text(t,x,y,size,color,align='center',weight='400'){X.fillStyle=color;X.font=`${weight} ${size}px 'Segoe UI',Inter,Arial,sans-serif`;X.textAlign=align;X.textBaseline='middle';X.fillText(t,x,y);}
+function pill(t,x,y,color){X.font="600 22px 'Segoe UI',Arial";const w=X.measureText(t).width+40;X.strokeStyle=color;X.lineWidth=2;rr(x-w/2,y-20,w,40,20);X.stroke();text(t,x,y,22,color,'center','600');return w;}
+function bg(){X.fillStyle=COL.bg;X.fillRect(0,0,W,H);}
+function kicker(t){text(t.toUpperCase(),W/2,120,20,COL.accent,'center','700');}
+
+/* ---------- slides ---------- */
+const SLIDES = [
+  // 1 intro
+()=>{bg();kicker('Bright Data · BattleBotsDev');
+  text('⚔️ BattleBots Win Predictor',W/2,300,64,COL.text,'center','800');
+  text('Predicts who wins any BattleBots matchup —',W/2,380,26,COL.muted);
+  text('from web data collected with Bright Data.',W/2,415,26,COL.muted);
+  pill('#BattleBotsDev',W/2,500,COL.accent);},
+  // 2 predictor
+()=>{bg();kicker('Predict & explain');text('Who wins — and why?',W/2,180,46,COL.text,'center','800');
+  X.fillStyle=COL.panel;rr(240,250,800,320,16);X.fill();
+  text('Predicted winner: Tombstone 🏆',W/2,300,28,COL.win,'center','700');
+  const bx=290,bw=700,by=350;X.fillStyle=COL.accent;rr(bx,by,bw*0.518,44,8);X.fill();
+  X.fillStyle=COL.accent2;rr(bx+bw*0.518,by,bw*0.482,44,8);X.fill();
+  text('51.8%',bx+40,by+22,22,'#0b0d10','center','800');text('48.2%',bx+bw-40,by+22,22,'#0b0d10','center','800');
+  X.textAlign='left';const rs=['• Tombstone has the stronger win rate (72% vs 68%).','• Tombstone finishes fights — 73% of wins are KOs.','• Head-to-head: Tombstone 0 - 1 Minotaur.'];
+  rs.forEach((r,k)=>text(r,300,440+k*38,22,'#cdd6e0','left'));},
+  // 3 radar
+()=>{bg();kicker('Compare');text('Every signal, side by side',W/2,150,44,COL.text,'center','800');
+  const cx=W/2,cy=430,R=150;
+  X.strokeStyle=COL.line;X.lineWidth=1;
+  [1,.66,.33].forEach(s=>{X.beginPath();[[0,-1],[1,0],[0,1],[-1,0]].forEach((p,k)=>{const x=cx+p[0]*R*s,y=cy+p[1]*R*s;k?X.lineTo(x,y):X.moveTo(x,y);});X.closePath();X.stroke();});
+  function poly(vals,fill,stroke){X.beginPath();const dirs=[[0,-1],[1,0],[0,1],[-1,0]];vals.forEach((v,k)=>{const x=cx+dirs[k][0]*R*v,y=cy+dirs[k][1]*R*v;k?X.lineTo(x,y):X.moveTo(x,y);});X.closePath();X.fillStyle=fill;X.fill();X.strokeStyle=stroke;X.lineWidth=3;X.stroke();}
+  poly([.78,.85,.7,.95],'rgba(255,92,51,.28)',COL.accent);
+  poly([.72,.6,.62,.8],'rgba(51,177,255,.24)',COL.accent2);
+  text('Win %',cx,cy-R-24,20,COL.muted);text('KO %',cx+R+50,cy,20,COL.muted);
+  text('Weapon',cx,cy+R+24,20,COL.muted);text('Experience',cx-R-70,cy,20,COL.muted);
+  X.textAlign='center';X.fillStyle=COL.accent;X.fillRect(cx-130,cy+R+70,16,16);text('Tombstone',cx-40,cy+R+78,20,COL.muted);
+  X.fillStyle=COL.accent2;X.fillRect(cx+40,cy+R+70,16,16);text('Minotaur',cx+130,cy+R+78,20,COL.muted);},
+  // 4 robot card
+()=>{bg();kicker('Robot profiles');text('Full stats & match history',W/2,160,44,COL.text,'center','800');
+  X.fillStyle=COL.panel;rr(280,240,720,300,16);X.fill();
+  text('#1',330,300,30,COL.accent,'left','800');text('Bite Force',400,300,30,COL.text,'left','700');
+  text('drum spinner · Paul Ventimiglia',640,302,20,COL.muted,'left');
+  const pills=['83.3% win','20-4','45% KO','250 lb'];let px=330;pills.forEach(p=>{X.font="600 20px 'Segoe UI'";const w=X.measureText(p).width+32;X.fillStyle=COL.panel2;rr(px,350,w,40,10);X.fill();text(p,px+w/2,370,20,COL.text,'center','600');px+=w+14;});
+  text('2024  Loss vs End Game   ·   2019  Win vs Tombstone   ·   2018  Win vs Lock-Jaw',W/2,460,20,COL.muted);},
+  // 5 tournament
+()=>{bg();kicker('Tournament simulator');text('Predict the champion',W/2,180,44,COL.text,'center','800');
+  function slot(t,x,y,win){X.fillStyle=win?'rgba(255,92,51,.2)':COL.panel2;X.strokeStyle=win?COL.accent:COL.line;X.lineWidth=1;rr(x,y,180,44,8);X.fill();X.stroke();text(t,x+90,y+22,20,win?COL.accent:COL.muted,'center',win?'700':'400');}
+  slot('Bite Force',300,340,false);slot('End Game',300,300,true);
+  slot('End Game',560,320,true);
+  text('→',510,342,30,COL.accent);text('→',770,342,30,COL.accent);
+  X.fillStyle=COL.accent;rr(820,300,220,64,12);X.fill();text('🏆 End Game',930,332,26,'#0b0d10','center','800');
+  text('A full single-elimination bracket, fight by fight.',W/2,470,24,COL.muted);},
+  // 6 backtest
+()=>{bg();kicker('Rigor, not guessing');text('Backtested on 66 real fights',W/2,160,42,COL.text,'center','800');
+  text('66.7%',W/2,320,110,COL.win,'center','800');
+  let px=W/2-330;['HIGH → 80%','MEDIUM → 72%','LOW → 59%'].forEach(p=>{px+=pill(p,px+110,430,COL.accent2)+30;});
+  text('Accuracy rises with confidence — the model knows when it knows.',W/2,540,24,COL.muted);},
+  // 7 insights
+()=>{bg();kicker('Insights');text('Weapon meta & biggest upsets',W/2,150,42,COL.text,'center','800');
+  X.fillStyle=COL.panel;rr(280,220,720,320,16);X.fill();
+  const wb=[['Vertical spinner',.60,'60%'],['Drum spinner',.54,'54%'],['Horizontal',.41,'41%']];
+  wb.forEach((b,k)=>{const y=270+k*54;text(b[0],540,y,20,COL.muted,'right');X.fillStyle=COL.panel2;rr(560,y-8,340,16,8);X.fill();
+    const g=X.createLinearGradient(560,0,900,0);g.addColorStop(0,COL.accent2);g.addColorStop(1,COL.accent);X.fillStyle=g;rr(560,y-8,340*b[1],16,8);X.fill();
+    text(b[2],930,y,20,COL.text,'left','700');});
+  text('💥 Biggest upset: Gruff beat Jäger — favorite was 61.7% to win.',W/2,500,22,COL.win);},
+  // 8 tech
+()=>{bg();kicker('Under the hood');text('Angular · FastAPI · Bright Data',W/2,200,42,COL.text,'center','800');
+  const nodes=['Angular','FastAPI','Bright Data'];let x=340;nodes.forEach((n,k)=>{X.font="700 26px 'Segoe UI'";const w=X.measureText(n).width+50;X.fillStyle=COL.panel2;X.strokeStyle=COL.line;rr(x,360,w,60,12);X.fill();X.stroke();text(n,x+w/2,390,26,COL.text,'center','700');x+=w;if(k<2){text('▶',x+25,390,26,COL.accent);x+=60;}});
+  text('Web Unlocker scrapes the data; light & dark themes included.',W/2,500,24,COL.muted);},
+  // 9 close
+()=>{bg();kicker('Built with Bright Data');text('Thanks for watching ⚔️',W/2,260,54,COL.text,'center','800');
+  text('battle-bots-hackathon.vercel.app',W/2,350,26,COL.accent2);
+  text('github.com/kaushalkarkar/BattleBotsHackathon',W/2,395,26,COL.accent2);
+  pill('#BattleBotsDev',W/2,480,COL.accent);}
+];
+
+/* caption bar */
+function drawCaption(n){X.fillStyle='rgba(0,0,0,.35)';X.fillRect(0,H-90,W,90);X.save();X.font="22px 'Segoe UI',Arial";X.textAlign='center';X.fillStyle='#dfe6ee';
+  const words=CAPTIONS[n].split(' ');let line='',lines=[];words.forEach(w=>{if(X.measureText(line+w).width>1100){lines.push(line);line='';}line+=w+' ';});lines.push(line);
+  lines.slice(-2).forEach((l,k)=>X.fillText(l.trim(),W/2,H-60+k*28));X.restore();}
+
+let cur=0, fade=0, rafId=null, playing=false;
+function loop(){fade=Math.min(1,fade+0.06);X.globalAlpha=1;SLIDES[cur]();X.globalAlpha=1;drawCaption(cur);
+  // progress bar
+  X.fillStyle=COL.accent;X.fillRect(0,0,W*((cur+1)/SLIDES.length),5);
+  rafId=requestAnimationFrame(loop);}
+
+function playSlide(n){cur=n;fade=0;audio.src=`audio/slide${n+1}.wav`;audio.play().catch(()=>{});}
+
+/* ---------- recording ---------- */
+let recorder,chunks=[],actx,srcNode,dest;
+function pickMime(){const opts=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];return opts.find(o=>window.MediaRecorder&&MediaRecorder.isTypeSupported(o))||'';}
+
+function setupAudioGraph(){
+  if(actx) return;
+  actx=new (window.AudioContext||window.webkitAudioContext)();
+  srcNode=actx.createMediaElementSource(audio);
+  dest=actx.createMediaStreamDestination();
+  srcNode.connect(dest);srcNode.connect(actx.destination);
+}
+
+async function start(record){
+  if(!loopRunning){loopRunning=true;loop();}
+  setupAudioGraph();await actx.resume();
+  if(record){
+    const vstream=C.captureStream(30);
+    const mixed=new MediaStream([...vstream.getVideoTracks(),...dest.stream.getAudioTracks()]);
+    const mime=pickMime();
+    recorder=new MediaRecorder(mixed,mime?{mimeType:mime}:undefined);
+    chunks=[];recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+    recorder.onstop=()=>{
+      const type=recorder.mimeType||mime||'video/webm';
+      const ext=type.includes('mp4')?'mp4':'webm';
+      const blob=new Blob(chunks,{type});const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download=`BattleBots-demo.${ext}`;a.click();
+      document.getElementById('out').innerHTML=`<a id="dl" href="${url}" download="BattleBots-demo.${ext}">⬇ Download BattleBots-demo.${ext}</a>`;
+      statusEl.textContent=`Done — saved BattleBots-demo.${ext} (${(blob.size/1e6).toFixed(1)} MB).`;
+    };
+    recorder.start();
+    statusEl.textContent=`Recording (${mime.includes('mp4')?'mp4':'webm'})… let it play to the end.`;
+  } else { statusEl.textContent='Previewing… (not recording)'; }
+  playing=true;playSlide(0);
+}
+
+let loopRunning=false;
+audio.addEventListener('ended',()=>{
+  if(!playing)return;
+  if(cur<SLIDES.length-1){playSlide(cur+1);}
+  else{playing=false;if(recorder&&recorder.state==='recording'){setTimeout(()=>recorder.stop(),400);}else{statusEl.textContent='Preview finished.';}}
+});
+
+document.getElementById('rec').onclick=()=>{document.getElementById('rec').disabled=true;document.getElementById('preview').disabled=true;start(true);};
+document.getElementById('preview').onclick=()=>start(false);
+
+// draw first frame
+loop();setTimeout(()=>cancelAnimationFrame(rafId),50);loopRunning=false;
+SLIDES[0]();drawCaption(0);
+</script>
+</body>
+</html>
