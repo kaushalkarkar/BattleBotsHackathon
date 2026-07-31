@@ -24,6 +24,9 @@
       <button [class.active]="view === 'insights'" (click)="setView('insights')">
         <span class="ico">📈</span><span class="lbl">Insights</span>
       </button>
+      <button [class.active]="view === 'arena'" (click)="setView('arena')">
+        <span class="ico">⚔️</span><span class="lbl">Arena</span>
+      </button>
     </nav>
   </aside>
 
@@ -56,6 +59,8 @@
       [meta]="weaponMeta"
       [upsets]="upsets">
     </app-insights>
+
+    <app-arena *ngIf="view === 'arena'" [robots]="robots"></app-arena>
   </main>
 </div>
 

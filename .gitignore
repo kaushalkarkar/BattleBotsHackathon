@@ -16,3 +16,6 @@ out-tsc/
 # OS
 .DS_Store
 Thumbs.db
+
+# local dev preview config
+.claude/

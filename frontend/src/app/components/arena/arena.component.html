@@ -1,0 +1,32 @@
+<div class="card">
+  <h2>⚔️ Arena — drive your robot in real time</h2>
+  <p class="sub">Pick your bot and an opponent, then fight. Damage &amp; agility come from each robot's real stats.</p>
+
+  <div class="setup">
+    <div class="field">
+      <label>Your robot (WASD)</label>
+      <app-custom-select [options]="robotNames" [(value)]="playerName" ariaLabel="Your robot"></app-custom-select>
+    </div>
+    <div class="vs">VS</div>
+    <div class="field">
+      <label>Opponent (AI)</label>
+      <app-custom-select [options]="robotNames" [(value)]="oppName" ariaLabel="Opponent"></app-custom-select>
+    </div>
+    <button (click)="start()" [disabled]="playerName === oppName">
+      {{ running ? 'Restart ⚔️' : 'Fight! ⚔️' }}
+    </button>
+    <label class="auto">
+      <input type="checkbox" [(ngModel)]="autoSim" /> Auto-sim
+    </label>
+  </div>
+
+  <div class="stage">
+    <canvas #cv [width]="Wd" [height]="Ht"></canvas>
+  </div>
+
+  <div class="controls">
+    <span class="keys"><b>W</b> thrust · <b>S</b> reverse · <b>A</b>/<b>D</b> turn</span>
+    <span class="tip" *ngIf="!running && !winner">Line up your weapon (the front tip) and ram them at speed for big damage.</span>
+    <span class="tip win" *ngIf="winner">{{ winner === 'Draw' ? "It's a draw!" : winner + ' takes it! Hit Restart to run it back.' }}</span>
+  </div>
+</div>

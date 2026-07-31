@@ -17,8 +17,9 @@ import { RobotDetailComponent } from './components/robot-detail/robot-detail.com
 import { BacktestComponent } from './components/backtest/backtest.component';
 import { TournamentComponent } from './components/tournament/tournament.component';
 import { InsightsComponent } from './components/insights/insights.component';
+import { ArenaComponent } from './components/arena/arena.component';
 
-type View = 'predict' | 'tournament' | 'backtest' | 'insights';
+type View = 'predict' | 'tournament' | 'backtest' | 'insights' | 'arena';
 
 @Component({
   selector: 'app-root',
@@ -31,6 +32,7 @@ type View = 'predict' | 'tournament' | 'backtest' | 'insights';
     BacktestComponent,
     TournamentComponent,
     InsightsComponent,
+    ArenaComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
